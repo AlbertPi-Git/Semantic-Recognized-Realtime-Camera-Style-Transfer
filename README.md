@@ -1,11 +1,11 @@
 # Semantic Recognized Real-time Camera Style Transfer
 
 ## Introduction
-This repository is an extension of Image Recognition course final project, which intends to develop an application that can achieve semantic recognized real-time camera arbitrary multi-style transfer. Specifically, we intend to apply different styles to human and background dynamically by utilizing human segmentation technique.   
+This repository is an extension of Image Recognition course final project, which intends to develop an application that can achieve semantic recognized real-time camera arbitrary multi-style transfer. Specifically, I intend to apply different styles to human and background dynamically by utilizing human segmentation technique.   
 
 ## Reference Repositories
 ### Human Segmentation
-The human segmentation implementation used in this application is borrowed from this repository: [thuyngch/Human-Segmentation-PyTorch](https://github.com/thuyngch/Human-Segmentation-PyTorch#benchmark). Speciafically, we adopt ResNet18 backboned UNet to do the segmentation.
+The human segmentation implementation used in this application is borrowed from this repository: [thuyngch/Human-Segmentation-PyTorch](https://github.com/thuyngch/Human-Segmentation-PyTorch#benchmark). Speciafically, I adopt ResNet18 backboned UNet to do the segmentation.
 
 ### Real-time Arbitrary Style Transfer
 Three real-time arbitrary style transfer implementations are borrowed from: 
@@ -33,16 +33,20 @@ python webcam.py --human_style "path to style image for human" --background_styl
 ```
 The ratio argument is used to adjust the strength of style, 0 means output with be the same as original image, 1 means the strongest style effect.
 
-For SANet_DynamicMask, the borrow implementation currently doesn't support style strength adjustment, so the ratio arguemnt doesn't have any effect. We intend to add this adjustment feature in the future.
+For SANet_DynamicMask, the borrow implementation currently doesn't support style strength adjustment, so the ratio arguemnt doesn't have any effect. I intend to add this adjustment feature in the future.
 
 ## Results and evaluation
 ### AdaIN
 ![AdaIN result](./Figs/result_AdaIN.jpg "AdaIN result")
 
 ### AvatarNet
-![AdaIN result](./Figs/result_AvatarNet.jpg "AdaIN result")
+![AvatarNet result](./Figs/result_AvatarNet.jpg "AvatarNet result")
 
 ### SANet
-![AdaIN result](./Figs/result_SANet.jpg "AdaIN result")
+![SANet result](./Figs/result_SANet.jpg "SANet result")
 
 ### Runtime Profile
+![Runtime profile](./Figs/runtime_profile.png "Runtime profile")
+Runtime profile is tested on server with GTX 1080Ti card by reading one content image repeatedly (Because I can't use camera on server :( , while my laptop doesn't have powerful GPU). Gatys et al. stands for the first neural style transfer [approach](https://github.com/leongatys/PytorchNeuralStyleTransfer) proposed by Gatys et al. 
+
+The implementation of AvatarNet seems have some efficiency problem, which indicates by its low GPU utilization.
