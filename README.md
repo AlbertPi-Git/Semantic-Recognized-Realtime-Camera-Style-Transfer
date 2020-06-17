@@ -37,9 +37,12 @@ For SANet_DynamicMask, the borrow implementation currently doesn't support style
 
 ## Results and evaluation
 ### AdaIN
+![AdaIN result](./Figs/result_AdaIN.jpg "AdaIN result")
 
 ### AvatarNet
+![AdaIN result](./Figs/result_AvatarNet.jpg "AdaIN result")
 
 ### SANet
+![AdaIN result](./Figs/result_SANet.jpg "AdaIN result")
 
 ### Runtime Profile
