@@ -47,6 +47,18 @@ For SANet_DynamicMask, the borrow implementation currently doesn't support style
 
 ### Runtime Profile
 ![Runtime profile](./Figs/runtime_profile.png "Runtime profile")
-Runtime profile is tested on server with GTX 1080Ti card by reading one content image repeatedly (Because I can't use camera on server :( , while my laptop doesn't have powerful GPU). Gatys et al. stands for the first neural style transfer [approach](https://github.com/leongatys/PytorchNeuralStyleTransfer) proposed by Gatys et al. 
+
+Runtime profile is tested on server with GTX 1080Ti card by reading one content image repeatedly (Because I can't use camera on server :( , while my laptop doesn't have powerful GPU). The content image size is 1280*720, the style image size is 400*400.
+
+Gatys et al. stands for the first neural style transfer [approach](https://github.com/leongatys/PytorchNeuralStyleTransfer) proposed by Gatys et al. 
 
 The implementation of AvatarNet seems have some efficiency problem, which indicates by its low GPU utilization.
+
+## Reference Paper
+1. [L. A. Gatys, A. S. Ecker, and M. Bethge, “Image style transfer using convolutional neural networks,” in Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 2414–2423, 2016.](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf)
+
+2. [X. Huang and S. Belongie, “Arbitrary style transfer in real-time with adaptive instance normalization,” in Proceedings of the IEEE International Conference on Computer Vision, pp. 1501–1510, 2017.](https://arxiv.org/pdf/1703.06868.pdf)
+
+3. [Lu Sheng, Ziyi Lin, Jing Shao and Xiaogang Wang, “Avatar-Net: Multi-scale Zero-shot Style Transfer by Feature Decoration”, in IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2018.](https://arxiv.org/pdf/1805.03857.pdf)
+
+4. [D. Y. Park and K. H. Lee, “Arbitrary style transfer with style-attentional networks,” in Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pp. 5880–5888, 2019.](http://openaccess.thecvf.com/content_CVPR_2019/papers/Park_Arbitrary_Style_Transfer_With_Style-Attentional_Networks_CVPR_2019_paper.pdf)
