@@ -12,8 +12,8 @@ from torchvision import transforms
 #---------------------------------Input arguments and some global settings----------------------------------#
 # Argument parser
 parser = argparse.ArgumentParser()
-parser.add_argument('--person_style', type=str,
-                    help='File path to the person style image')
+parser.add_argument('--human_style', type=str,
+                    help='File path to the human style image')
 parser.add_argument('--background_style', type=str,
                     help='File path to the background style image')
 parser.add_argument('--ratio', type=float, default=0.5,
@@ -21,8 +21,8 @@ parser.add_argument('--ratio', type=float, default=0.5,
 args= parser.parse_args()
 
 # Expected resolution of output video
-OUT_WIDTH = int(1280/2)
-OUT_HEIGHT = int(720/2)
+OUT_WIDTH = int(1280/3)
+OUT_HEIGHT = int(720/3)
 
 # Camera resolution
 CAM_WIDTH = 1280
@@ -125,10 +125,10 @@ print("Done Loading Style Transfer Network\n")
 
 
 #------------------------------Human and background style image loading-------------------------------------#
-# Load person style image and convert it to tensor
-person_style_img=central_square_crop(cv2.imread(args.person_style))
-person_style_img=cv2.resize(person_style_img,(512,512))
-person_style_tensor=toTensor(person_style_img)
+# Load human style image and convert it to tensor
+human_style_img=central_square_crop(cv2.imread(args.human_style))
+human_style_img=cv2.resize(human_style_img,(512,512))
+human_style_tensor=toTensor(human_style_img)
 
 # Load background style image and convert it to tensor
 background_style_img=central_square_crop(cv2.imread(args.background_style))
@@ -153,20 +153,21 @@ def webcam():
 
             # Get webcam input
             ret_val, content_img = cam.read()
+            # content_img=cv2.imread("input/content/selfie2.jpg")
 
             # Mirror and resize video frame to exprected size
             content_img = cv2.flip(content_img, 1)
             content_img = cv2.resize(content_img,(OUT_WIDTH,OUT_HEIGHT),interpolation=cv2.INTER_CUBIC)
             content_tensor=toTensor(content_img)
 
-            # generate person_mask and background_mask
+            # generate human_mask and background_mask
             # shape of mask image is (H,W) and range is 0 ~ 1
-            person_mask=np.round(segmentObj.run(content_img))
-            background_mask=1-person_mask
+            human_mask=np.round(segmentObj.run(content_img))
+            background_mask=1-human_mask
 
             # unsqueeze twice to make form (B,C,H,W) tensor format
-            person_mask_tensor=torch.Tensor(person_mask).unsqueeze(0).unsqueeze(0).to(device)
-            # person_mask_tensor.unsqueeze_(0)
+            human_mask_tensor=torch.Tensor(human_mask).unsqueeze(0).unsqueeze(0).to(device)
+            # human_mask_tensor.unsqueeze_(0)
             background_mask_tensor=torch.Tensor(background_mask).unsqueeze(0).unsqueeze(0).to(device)
             # background_mask_tensor.unsqueeze_(0)
 
@@ -176,21 +177,23 @@ def webcam():
 
             # stylize image
             with torch.no_grad():
-                stylized_tensor =  network(content_tensor, [person_style_tensor,background_style_tensor], args.ratio, 3, 1,
-                        [person_mask_tensor,background_mask_tensor], None, False)
+                stylized_tensor =  network(content_tensor, [human_style_tensor,background_style_tensor], args.ratio, 3, 1,
+                        [human_mask_tensor,background_mask_tensor], None, False)
             
             stylized_img=toImage(stylized_tensor.detach())
             stylized_img = cv2.resize(stylized_img,(OUT_WIDTH,OUT_HEIGHT),interpolation=cv2.INTER_CUBIC)
             
             # concatenate original image and stylized image
-            factor=0.5*content_img.shape[0]/person_style_img.shape[0]
-            resized_person_style_img = cv2.resize(person_style_img,(0,0),fx=factor,fy=factor, interpolation = cv2.INTER_CUBIC)
+            factor=0.5*content_img.shape[0]/human_style_img.shape[0]
+            resized_human_style_img = cv2.resize(human_style_img,(0,0),fx=factor,fy=factor, interpolation = cv2.INTER_CUBIC)
             resized_background_style_img = cv2.resize(background_style_img,(0,0),fx=factor,fy=factor, interpolation = cv2.INTER_CUBIC)
-            resized_style_img=np.vstack([resized_person_style_img,resized_background_style_img])
+            resized_style_img=np.vstack([resized_human_style_img,resized_background_style_img])
 
             # Don't convert to uint8 or there may be some display problem due to precision loss
             # output=np.array(255*np.concatenate((resized_style_img/255,content_img/255,stylized_img),axis=1),dtype=np.uint8)
             output=np.concatenate((resized_style_img/255,content_img/255,stylized_img),axis=1)
+
+            # cv2.imwrite("result.jpg",np.array(255*output,dtype=np.uint8))
 
             # Show webcam
             cv2.namedWindow('Demo webcam',cv2.WINDOW_NORMAL)

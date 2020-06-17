@@ -33,8 +33,8 @@ DECODER_CHECKPOINT = "model_checkpoints/decoder.pth"
 SEGMENTATION_NET_CHECKPOINT = "model_checkpoints/UNet_ResNet18.pth"
 
 # Expected resolution of output video
-OUT_WIDTH = int(1280/2)
-OUT_HEIGHT = int(720/2)
+OUT_WIDTH = int(1280/1)
+OUT_HEIGHT = int(720/1)
 
 # Camera resolution
 CAM_WIDTH = 1280
@@ -50,6 +50,12 @@ def central_square_crop(img):
     y = center[0] - h/2
     crop_img = img[int(y):int(y+h), int(x):int(x+w),:]
     return crop_img
+
+# The output is float and not in 0 - 1, so need to clamp to 0 - 1
+def saturateFloatValue(img):
+    img[img>1]=1.0
+    img[img<0]=0.0
+    return img
 
 # Convert OpenCV imread image to RGB style and 0 ~ 1 range. The further convert it to normalized torch tensor with batch channel.
 def toTensor(img):
@@ -170,6 +176,7 @@ def webcam():
 
             # Get webcam input
             ret_val, content_img = cam.read()
+            # content_img=cv2.imread("input/content/selfie2.jpg")
 
             # Mirror and resize
             content_img = cv2.flip(content_img, 1)
@@ -202,6 +209,7 @@ def webcam():
             human_img = cv2.bitwise_and(human_img,human_img,mask=human_mask)
             background_img = cv2.bitwise_and(background_img,background_img,mask=background_mask) 
             stylized_img = human_img + background_img
+            stylized_img = saturateFloatValue(stylized_img)
 
             # Combine target style images 
             factor=0.5*content_img.shape[0]/human_style_img.shape[0]
@@ -213,6 +221,8 @@ def webcam():
             # Don't convert to uint8 or there may be some display problem due to precision loss
             output=np.array(255*np.concatenate((resized_style_img/255,content_img/255,stylized_img),axis=1),dtype=np.uint8)
             output=np.concatenate((resized_style_img/255,content_img/255,stylized_img),axis=1)
+
+            # cv2.imwrite("result.jpg",np.array(255*output,dtype=np.uint8))
 
             # Show webcam
             cv2.namedWindow('Semantic Recognized Real-time Camera Webcam Demo',cv2.WINDOW_NORMAL)
